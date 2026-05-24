@@ -3,7 +3,6 @@ import re
 import html
 import string
 import token
-import token
 import unicodedata
 
 import nltk
@@ -13,12 +12,8 @@ from nltk.stem import WordNetLemmatizer,PorterStemmer
 from nltk.tokenize import word_tokenize
 
 import pandas as pd
-
-#downloading necessary nltk resources
-nltk.download("punkt")
-nltk.download("stopwords")
-nltk.download("wordnet")
-nltk.download("omw-1.4")
+import nltk
+import os
 
 
 
@@ -91,7 +86,7 @@ def remove_mentions(text):
     Example: @john
     """
 
-    return re.sub(r"@\w+", " ", text)
+    return re.sub(r"@", "", text)
 
 
 def process_hashtags(text):
@@ -207,4 +202,48 @@ def preprocess_text(
     cleaned_text = " ".join(tokens)
 
     return cleaned_text
+
+#full dataframe preprocessing function
+
+def preprocess_dataframe(
+    dataframe,
+    text_column,
+    output_column="clean_text",
+    remove_stopword_flag=True,
+    use_stemming=False,
+    use_lemmatization=True
+):
+    """
+    Apply preprocessing to entire dataframe column.
+    """
+
+    dataframe[output_column] = dataframe[text_column].apply(
+        lambda text: preprocess_text(
+            text=text,
+            remove_stopword_flag=remove_stopword_flag,
+            use_stemming=use_stemming,
+            use_lemmatization=use_lemmatization
+        )
+    )
+
+    return dataframe
+
+
+#example usage:
+if __name__ == "__main__":
+
+    amazon_example = """I absolutely LOVE this product!!! <br>
+Best purchase ever 😍😍
+Visit: https://amazon.com
+"""
+
+    tweet_example = """OMG this movie was NOT good 😭😭
+    @john totally disappointed!!! #badmovie
+    """
+
+    print("\n========== AMAZON EXAMPLE ==========")
+    print(preprocess_text(amazon_example))
+
+    print("\n========== TWEET EXAMPLE ==========")
+    print(preprocess_text(tweet_example))
 
