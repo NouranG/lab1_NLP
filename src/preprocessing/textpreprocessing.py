@@ -153,8 +153,7 @@ def remove_stopwords(tokens):
 def stem_tokens(tokens):
     return [stemmer.stem(word) for word in tokens]
 def lemmatize_tokens(tokens):
-    return [lemmatizer.lemmatize(word) for word in tokens]
-
+    return " ".join([lemmatizer.lemmatize(t) for t in tokens])
 
 #main preprocessing function that applies all the above steps
 def preprocess_text(
