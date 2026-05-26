@@ -175,7 +175,6 @@ class TextPreprocessor:
         self._lemmatizer = WordNetLemmatizer()
         self._stopwords = self._build_stopwords()
 
-    # ── public API ────────────────────────────────────────────────────────────
 
     def process(self, text: str) -> str:
         """Clean one string, return space-joined token string."""
