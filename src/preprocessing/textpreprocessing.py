@@ -62,7 +62,6 @@ def lowercase_text(text):
 def remove_html(text):
     """
     Remove HTML tags.
-    Useful for Amazon reviews.
     """
 
     text = html.unescape(text)
@@ -74,7 +73,6 @@ def remove_html(text):
 def remove_urls(text):
     """
     Remove URLs.
-    Useful for tweets.
     """
 
     return re.sub(r"http\S+|www\S+", " ", text)
@@ -82,8 +80,7 @@ def remove_urls(text):
 
 def remove_mentions(text):
     """
-    Remove Twitter mentions.
-    Example: @john
+    remove twitter mentions.
     """
 
     return re.sub(r"@", "", text)
@@ -91,9 +88,7 @@ def remove_mentions(text):
 
 def process_hashtags(text):
     """
-    Remove # symbol but keep hashtag word.
-    Example:
-    #happy -> happy
+    Remove #
     """
 
     return re.sub(r"#", "", text)
@@ -163,9 +158,9 @@ def preprocess_text(
     Complete preprocessing pipeline.
     """
 
-    # -----------------------------------------------------
-    # HANDLE NULL VALUES
-    # -----------------------------------------------------
+
+    # Handling nulls
+  
 
     if pd.isna(text):
         return ""
@@ -198,7 +193,7 @@ def preprocess_text(
     if use_lemmatization:
         tokens = lemmatize_tokens(tokens)
 
-    cleaned_text = " ".join(tokens)
+    cleaned_text = "".join(tokens)
 
     return cleaned_text
 
@@ -228,21 +223,5 @@ def preprocess_dataframe(
     return dataframe
 
 
-#example usage:
-if __name__ == "__main__":
 
-    amazon_example = """I absolutely LOVE this product!!! <br>
-Best purchase ever 😍😍
-Visit: https://amazon.com
-"""
-
-    tweet_example = """OMG this movie was NOT good 😭😭
-    @john totally disappointed!!! #badmovie
-    """
-
-    print("\n========== AMAZON EXAMPLE ==========")
-    print(preprocess_text(amazon_example))
-
-    print("\n========== TWEET EXAMPLE ==========")
-    print(preprocess_text(tweet_example))
 
