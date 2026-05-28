@@ -7,6 +7,10 @@ data/
 wheels/
 *.egg-info
 *.env
+word2vec/
+glove.6B/
+
 
 # Virtual environments
 .venv
+
