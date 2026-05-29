@@ -1,0 +1,41 @@
+data:
+  input_path: data\raw\Reviews.csv
+  name: 'Amazon Reviews'
+  text_column: 'Text'
+  label_column: 'Score'
+
+preprocessing:
+  domain: 'amazon'
+  remove_stopwords: true
+  lemmatization: true
+
+vectorization:
+  type: 'bow'
+  max_features: 5000
+  ngram_range: [1, 2]
+
+  embeddings:
+    type: 'word2vec'
+    embedding_path: '..\word2vec\GoogleNews-vectors-negative300.bin'
+    vector_size: 300
+    window: 5
+    min_count: 2
+    workers: 4
+
+model:
+  type: 'random_forest'
+  max_iter: 1000
+  random_state: 42
+  test_size: 0.2
+  max_depth: 10
+  n_estimators: 100
+
+  evaluation:
+    metrics:
+      - accuracy
+      - f1_score
+      - precision
+      - recall
+
+experiment:
+  name: nlp_vectorization_comparison
