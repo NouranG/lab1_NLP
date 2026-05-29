@@ -3,6 +3,7 @@ data:
   name: 'Amazon Reviews'
   text_column: 'Text'
   label_column: 'Score'
+  sample_size: 10000
 
 preprocessing:
   domain: 'amazon'
@@ -10,7 +11,7 @@ preprocessing:
   lemmatization: true
 
 vectorization:
-  type: 'bow'
+  type: 'bm25'
   max_features: 5000
   ngram_range: [1, 2]
 

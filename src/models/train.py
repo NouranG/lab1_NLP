@@ -2,6 +2,8 @@
 import json
 import yaml
 import joblib
+from pathlib import Path
+from datetime import datetime
 import pandas as pd
 import mlflow
 import numpy as np
@@ -37,6 +39,10 @@ with open(PARAMS_PATH, "r") as f:
 data_path = ROOT / params["data"]["input_path"]
 df = pd.read_csv(data_path)
 
+# Sample data if specified
+if params["data"]["sample_size"]:
+    df = df.sample(n=params["data"]["sample_size"], random_state=params["model"]["random_state"])
+
 text_column = params["data"]["text_column"]
 label_column = params["data"]["label_column"]
 df= df[[text_column, label_column]]
@@ -64,12 +70,18 @@ else:
 preprocessor = TextPreprocessor(config)
 df['clean_text'] = df[text_column].apply(preprocessor.process)
 
+print(df[["clean_text"]].head(5))
+print(df["clean_text"].isna().sum())
+
 #---------------------------------------------------------------------------------
 
 #train test split
 X_train, X_test, y_train, y_test = train_test_split(df['clean_text'], df['label'], 
                             test_size=params["model"]["test_size"]
                             , random_state=params["model"]["random_state"])
+
+print(X_train.shape, X_test.shape)
+print(y_train.shape, y_test.shape)
 
 #-----------------------------------------------------------------------------
 # Vectorization
@@ -87,7 +99,7 @@ elif vec_type == "tfidf":
     X_test_vec = tfidf_vectorizer.transform(X_test)
 #3. BM25
 elif vec_type == "bm25":
-    bm25_vectorizer = BM25Vectorizer(max_features=params["vectorization"]["max_features"])
+    bm25_vectorizer = BM25Vectorizer()
     X_train_vec = bm25_vectorizer.fit_transform(X_train)
     X_test_vec = bm25_vectorizer.transform(X_test)
 
@@ -105,10 +117,17 @@ elif vec_type == "embeddings":
     X_train_vec = vectorizer.fit_transform(X_train)
     X_test_vec = vectorizer.transform(X_test)
 
+print(type(X_train_vec))
+print(X_train_vec.shape)
+
 #---------------------------------------------------------------------------------
 #mlflow start run
-with mlflow.start_run():
-    
+mlflow.set_experiment(
+    params["experiment"]["name"]
+)
+with mlflow.start_run(
+    run_name=f"{vec_type}_{params['model']['type']}"
+):    
 #---------------------------------------------------------------------------------
 # Model Training
     if params["model"]["type"] == "random_forest":
@@ -123,6 +142,9 @@ with mlflow.start_run():
     #predicting and evaluating the model
     model.fit(X_train_vec, y_train)
     y_pred = model.predict(X_test_vec)
+
+    print(model.predict(X_train_vec[:5]))
+
     accuracy = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)

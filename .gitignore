@@ -7,8 +7,17 @@ data/
 wheels/
 *.egg-info
 *.env
+
+# Model and vectorizer files
+models/
 word2vec/
 glove.6B/
+
+# MLflow artifacts
+mlruns/
+mlflow-artifacts/
+mlflow.db
+*.db
 
 
 # Virtual environments
